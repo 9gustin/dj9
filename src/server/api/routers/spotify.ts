@@ -17,14 +17,20 @@ export const spotifyRouter = createTRPCRouter({
       });
 
       if (!response.ok) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Spotify API error",
+        });
       }
 
       const data = await response.json();
       console.log(data);
       return data.items;
-    } catch {
-      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    } catch (e) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: e.message,
+      });
     }
   }),
 });
