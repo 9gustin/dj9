@@ -64,8 +64,12 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope:
-            "user-read-email user-read-private user-read-recently-played playlist-read-private",
+            "user-read-email user-top-read user-modify-playback-state playlist-read-private",
         },
+        // user-read-email: User INFO
+        // user-top-read: Top Tracks(initial suggestions)
+        // user-modify-playback-state: Add to queue
+        // playlist-read-private: List playlist songs
       }, // Adjust scope as needed
     }),
     /**
