@@ -122,3 +122,12 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const spotifyAuthProcedure = t.procedure.use(
+  async ({ ctx, next, ...rest }) => {
+    if (!ctx.session?.user.accessToken) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+    return next({ ctx, ...rest });
+  },
+);
