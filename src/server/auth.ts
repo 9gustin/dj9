@@ -4,7 +4,6 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import { Profile } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -63,8 +62,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
       authorization: {
         params: {
-          scope:
-            "user-read-email user-top-read user-modify-playback-state playlist-read-private",
+          scope: "user-read-email user-read-playback-state",
         },
         // user-read-email: User INFO
         // user-top-read: Top Tracks(initial suggestions)

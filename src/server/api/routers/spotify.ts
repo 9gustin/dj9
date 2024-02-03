@@ -1,18 +1,50 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
+export type SpotifyPlayerState = {
+  isPlaying: boolean;
+  device: {
+    id: string;
+    isActive: boolean;
+    name: string;
+    type: "Computer" | "Smartphone" | "Speaker";
+  };
+  item: {
+    id: string;
+    name: string;
+    cover: string;
+  };
+};
+
+type SpotifyPlayerStateResponse = {
+  is_playing: boolean;
+  device: {
+    id: string;
+    is_active: boolean;
+    name: string;
+    type: "Computer" | "Phone";
+  };
+  item: {
+    id: string;
+    name: string;
+    album: {
+      images: {
+        url: string;
+      }[];
+    };
+  };
+};
+
 export const spotifyRouter = createTRPCRouter({
-  getRecentlyPlayed: publicProcedure.query(async ({ ctx }) => {
+  getPlayerState: publicProcedure.query(async ({ ctx }) => {
     if (!ctx.session?.user.accessToken) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
 
     try {
-      const accessToken = ctx.session.user.accessToken;
-      const endpoint = "https://api.spotify.com/v1/me/player/recently-played";
-      const response = await fetch(endpoint, {
+      const response = await fetch("https://api.spotify.com/v1/me/player", {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${ctx.session.user.accessToken}`,
         },
       });
 
@@ -23,13 +55,27 @@ export const spotifyRouter = createTRPCRouter({
         });
       }
 
-      const data = await response.json();
-      console.log(data);
-      return data.items;
-    } catch (e) {
+      const data = (await response.json()) as SpotifyPlayerStateResponse;
+
+      return {
+        isPlaying: data.is_playing,
+        device: {
+          id: data.device.id,
+          isActive: data.device.is_active,
+          name: data.device.name,
+          type: data.device.type,
+        },
+        item: {
+          id: data.item.id,
+          name: data.item.name,
+          cover: data.item.album.images[0]?.url,
+        },
+      } as SpotifyPlayerState;
+    } catch (e: any) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
-        message: e.message,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        message: e?.message,
       });
     }
   }),

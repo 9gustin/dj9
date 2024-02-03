@@ -24,6 +24,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
           rel="stylesheet"
         />
+        <title>dj9</title>
+        <meta
+          name="description"
+          content="dj9 app - Create playlists based on your tastes"
+        />
       </Head>
       <SessionProvider session={session}>
         <Component {...pageProps} />

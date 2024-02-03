@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-family: "Poppins", sans-serif;
+html,
+body {
+  @apply bg-gray-800 text-neutral-100;
 }
