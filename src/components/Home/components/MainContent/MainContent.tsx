@@ -1,18 +1,9 @@
 import { Input } from "@/components/ui/input";
-import { api } from "@/utils/api";
 import { useDebouncedState } from "@mantine/hooks";
+import { SearchResult } from "./components/SearchResult";
 
 export const MainContent = () => {
   const [search, setSearch] = useDebouncedState("", 300);
-
-  const { data, isFetching } = api.spotify.searchItems.useQuery(
-    {
-      query: search,
-    },
-    {
-      enabled: Boolean(search.trim()),
-    },
-  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -26,15 +17,7 @@ export const MainContent = () => {
         placeholder="Duki, Bad Bunny, Travis Scott, etc"
         onChange={handleInputChange}
       />
-      <p className="text-gray-500">
-        Provide songs, artists, genres to get started. We'll make the rest ;)
-        <br />
-        TODO: {search}
-      </p>
-      <pre>
-        {JSON.stringify(data, null, 2)}
-        {isFetching && "Loading..."}
-      </pre>
+      <SearchResult query={search} />
     </section>
   );
 };

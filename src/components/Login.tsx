@@ -12,7 +12,7 @@ export const Login = () => {
         variant="secondary"
         onClick={() => void signIn("spotify", { callbackUrl: "/" })}
       >
-        <IconBrandSpotify /> Sign in
+        <IconBrandSpotify /> Login with Spotify
       </Button>
     </main>
   );

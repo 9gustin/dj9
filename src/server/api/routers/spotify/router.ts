@@ -1,40 +1,12 @@
 import { createTRPCRouter, spotifyAuthProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-
-export type SpotifyPlayerState = {
-  isPlaying: boolean;
-  device: {
-    id: string;
-    isActive: boolean;
-    name: string;
-    type: "Computer" | "Smartphone" | "Speaker";
-  };
-  item: {
-    id: string;
-    name: string;
-    cover: string;
-  };
-};
-
-type SpotifyPlayerStateResponse = {
-  is_playing: boolean;
-  device: {
-    id: string;
-    is_active: boolean;
-    name: string;
-    type: "Computer" | "Phone";
-  };
-  item: {
-    id: string;
-    name: string;
-    album: {
-      images: {
-        url: string;
-      }[];
-    };
-  };
-};
+import {
+  type SpotifySearchResult,
+  type SpotifyPlayerState,
+  type SpotifyPlayerStateResponse,
+  type SpotifySearchResponse,
+} from "./types";
 
 export const spotifyRouter = createTRPCRouter({
   getPlayerState: spotifyAuthProcedure.query(async ({ ctx }) => {
@@ -93,7 +65,7 @@ export const spotifyRouter = createTRPCRouter({
       }
       try {
         const response = await fetch(
-          `https://api.spotify.com/v1/search?q=${input.query}&type=artist%2Ctrack&limit=20&offset=0`,
+          `https://api.spotify.com/v1/search?q=${input.query}&type=artist%2Ctrack&limit=10&offset=0`,
           {
             headers: {
               Authorization: `Bearer ${ctx.session!.user.accessToken}`,
@@ -108,10 +80,34 @@ export const spotifyRouter = createTRPCRouter({
           });
         }
 
-        const data = (await response.json()) as any;
-        console.log(data);
+        const data = (await response.json()) as SpotifySearchResponse;
 
-        return data;
+        const artists = data.artists.items.map(
+          ({ id, name, type, images }) => ({
+            id,
+            name,
+            type,
+            image: images[0]?.url,
+          }),
+        );
+
+        const tracks = data.tracks.items.map(
+          ({ id, name, type, album, artists }) => ({
+            id,
+            name,
+            type,
+            artists: artists.map((artist) => ({
+              id: artist.id,
+              name: artist.name,
+            })),
+            image: album.images[0]?.url,
+          }),
+        );
+
+        return {
+          tracks,
+          artists,
+        } as SpotifySearchResult;
       } catch (e: any) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
