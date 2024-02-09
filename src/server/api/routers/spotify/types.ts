@@ -65,6 +65,7 @@ type BaseItem = {
   id: string;
   name: string;
   type: string;
+  href?: string;
   image: string | undefined;
 };
 
@@ -82,4 +83,24 @@ export type SearchItem = SpotifyArtist | SpotifyTrack;
 export type SpotifySearchResult = {
   tracks: SpotifyTrack[];
   artists: SpotifyArtist[];
+};
+
+export type SpotifyRecommendationsResponse = {
+  tracks: {
+    id: string;
+    name: string;
+    type: string;
+    external_urls: {
+      spotify: string;
+    };
+    album: {
+      images: {
+        url: string;
+      }[];
+    };
+    artists: {
+      id: string;
+      name: string;
+    }[];
+  }[];
 };

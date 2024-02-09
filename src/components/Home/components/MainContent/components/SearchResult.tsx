@@ -4,7 +4,12 @@ import type {
   SpotifySearchResult,
 } from "@/server/api/routers/spotify/types";
 import { Button } from "@/components/ui/button";
-import { IconArrowsShuffle, IconPlus, IconX } from "@tabler/icons-react";
+import {
+  IconArrowsShuffle,
+  IconExternalLink,
+  IconPlus,
+  IconX,
+} from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import classNames from "classnames";
 import { useRouter } from "next/router";
@@ -16,20 +21,31 @@ const searchKeys: Record<keyof SpotifySearchResult, string> = {
 
 const SEED_LIMIT = 5;
 
+type ItemActions = {
+  select?: {
+    initialSelected?: string[];
+    toggleItem?: (id: string) => boolean;
+  };
+  open?: boolean;
+};
+
 const CardResult = ({
   item,
-  toggleItem,
-  initialSelected,
+  actions,
 }: {
   item: SearchItem;
-  initialSelected: string[];
-  toggleItem: (id: string) => boolean;
+  actions?: ItemActions;
 }) => {
-  const [selected, setSelected] = useState(() =>
-    initialSelected.includes(item.id),
+  const [selected, setSelected] = useState(
+    () =>
+      actions?.select?.initialSelected &&
+      actions.select.initialSelected.includes(item.id),
   );
+
   const handleSelectItem = () => {
-    if (toggleItem(item.id)) {
+    if (!actions?.select?.toggleItem) return;
+
+    if (actions.select.toggleItem(item.id)) {
       setSelected((prev) => !prev);
     } else {
       // TODO: SHOW ALERT
@@ -69,34 +85,46 @@ const CardResult = ({
           </p>
         )}
       </div>
-      <Button
-        type="button"
-        className={classNames(
-          "m-auto h-10 w-10 p-0",
-          selected ? "bg-red-600" : "bg-green-600",
-        )}
-        onClick={handleSelectItem}
-      >
-        {selected ? (
-          <IconX className="h-4 w-4" />
-        ) : (
-          <IconPlus className="h-4 w-4" />
-        )}
-      </Button>
+      {actions?.select && (
+        <Button
+          type="button"
+          className={classNames(
+            "m-auto h-10 w-10 p-0",
+            selected ? "bg-red-600" : "bg-green-600",
+          )}
+          onClick={handleSelectItem}
+        >
+          {selected ? (
+            <IconX className="h-4 w-4" />
+          ) : (
+            <IconPlus className="h-4 w-4" />
+          )}
+        </Button>
+      )}
+      {actions?.open && item.href && (
+        <Button
+          type="button"
+          className={classNames(
+            "m-auto h-10 w-10 p-0",
+            selected ? "bg-red-600" : "bg-green-600",
+          )}
+          onClick={() => window.open(item.href, "_blank")}
+        >
+          <IconExternalLink className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 };
 
-const SearchSection = ({
+export const SearchSection = ({
   title,
   items,
-  toggleItem,
-  initialSelected,
+  actions,
 }: {
   title: string;
   items: SearchItem[];
-  initialSelected: string[];
-  toggleItem: (id: string) => boolean;
+  actions?: ItemActions;
 }) => {
   return (
     <div>
@@ -108,11 +136,7 @@ const SearchSection = ({
       >
         {items.map((item) => (
           <li key={item.id}>
-            <CardResult
-              initialSelected={initialSelected}
-              item={item}
-              toggleItem={toggleItem}
-            />
+            <CardResult item={item} actions={actions} />
           </li>
         ))}
       </ul>
@@ -195,8 +219,9 @@ export const SearchResult = ({ query }: { query: string }) => {
             key={key}
             title={searchKeys[key as keyof SpotifySearchResult]}
             items={items}
-            toggleItem={toggleItem}
-            initialSelected={selectedIds.current}
+            actions={{
+              select: { toggleItem, initialSelected: selectedIds.current },
+            }}
           />
         );
       })}

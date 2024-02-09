@@ -30,9 +30,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
           content="dj9 app - Create playlists based on your tastes"
         />
       </Head>
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
-      </SessionProvider>
+      <main className="m-auto flex min-h-screen w-full max-w-screen-md flex-col gap-4 p-2 md:p-4">
+        <SessionProvider session={session}>
+          <Component {...pageProps} />
+        </SessionProvider>
+      </main>
     </>
   );
 };
