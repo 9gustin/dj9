@@ -131,18 +131,18 @@ export const spotifyRouter = createTRPCRouter({
           limit: "20",
         });
 
-        if (input.seedArtists) {
+        if (input.seedArtists?.trim()) {
           urlParams.append(
             "seed_artists",
             decodeURIComponent(input.seedArtists),
           );
         }
 
-        if (input.seedGenres) {
+        if (input.seedGenres?.trim()) {
           urlParams.append("seed_genres", decodeURIComponent(input.seedGenres));
         }
 
-        if (input.seedTracks) {
+        if (input.seedTracks?.trim()) {
           urlParams.append("seed_tracks", decodeURIComponent(input.seedTracks));
         }
 

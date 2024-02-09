@@ -127,7 +127,7 @@ export const SearchSection = ({
   actions?: ItemActions;
 }) => {
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <h2 className="mb-2 mt-4 text-2xl font-bold text-gray-300">{title}</h2>
       <ul
         className="flex flex-col flex-wrap gap-4 md:grid 
