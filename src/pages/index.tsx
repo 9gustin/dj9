@@ -11,5 +11,8 @@ const statusPage = {
 export default function HomePage() {
   const { status } = useSession();
 
-  return statusPage[status]();
+  if (!status) return null;
+
+  const Page = statusPage[status];
+  return <Page />;
 }
