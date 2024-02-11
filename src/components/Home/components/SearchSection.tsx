@@ -14,7 +14,7 @@ export const SearchSection = ({
   title: string;
   loading?: boolean;
   action?: GenericAction<never>;
-  items: SearchItem[];
+  items?: SearchItem[];
   selected?: SearchItem[];
   genericActions?: GenericAction<SearchItem>[];
   toggleItem?: (id: SearchItem) => boolean;
@@ -34,7 +34,7 @@ export const SearchSection = ({
         )}
       </h2>
       {loading && <p className="text-gray-500">Loading...</p>}
-      {!loading && Boolean(items.length) && (
+      {!loading && items && (
         <ul className="flex flex-col flex-wrap gap-4 md:grid md:grid-flow-row-dense md:grid-cols-2 md:gap-4">
           {items.map((item) => (
             <li key={item.id}>

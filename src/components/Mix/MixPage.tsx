@@ -30,10 +30,6 @@ export const MixPage = () => {
     },
   });
 
-  if (!data?.tracks) {
-    return <div>Error</div>;
-  }
-
   const handleAdd = async (item?: SearchItem) => {
     if (!item?.uri) return;
 
@@ -55,7 +51,7 @@ export const MixPage = () => {
         }}
         loading={isFetching}
         title="For you ;)"
-        items={data.tracks}
+        items={data?.tracks}
         genericActions={[
           {
             icon: <IconPlaylistAdd />,
