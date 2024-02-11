@@ -128,7 +128,7 @@ export const spotifyRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         const urlParams = new URLSearchParams({
-          limit: "20",
+          limit: "10",
         });
 
         if (input.seedArtists?.trim()) {
@@ -168,10 +168,11 @@ export const spotifyRouter = createTRPCRouter({
         const data = (await response.json()) as SpotifyRecommendationsResponse;
 
         const tracks = data.tracks.map(
-          ({ id, name, type, album, artists, external_urls }) => ({
+          ({ id, name, type, album, artists, external_urls, uri }) => ({
             id,
             name,
             type,
+            uri,
             href: external_urls.spotify,
             artists: artists.map((artist) => ({
               id: artist.id,
@@ -184,6 +185,49 @@ export const spotifyRouter = createTRPCRouter({
         return {
           tracks,
         } as SpotifySearchResult;
+      } catch (e: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          message: e?.message,
+        });
+      }
+    }),
+  addToQueue: spotifyAuthProcedure
+    .input(
+      z.object({
+        trackURI: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!input.trackURI.trim()) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Missing track",
+        });
+      }
+      try {
+        const response = await fetch(
+          `https://api.spotify.com/v1/me/player/queue?uri=${input.trackURI}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${ctx.session!.user.accessToken}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          console.error(await response.json());
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Spotify API error",
+          });
+        }
+
+        return {
+          success: true,
+        };
       } catch (e: any) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

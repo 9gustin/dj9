@@ -38,6 +38,7 @@ export type SpotifySearchResponse = {
       id: string;
       name: string;
       type: string;
+      uri: string;
       images: {
         url: string;
       }[];
@@ -48,6 +49,7 @@ export type SpotifySearchResponse = {
       id: string;
       name: string;
       type: string;
+      uri: string;
       album: {
         images: {
           url: string;
@@ -66,6 +68,7 @@ type BaseItem = {
   name: string;
   type: string;
   href?: string;
+  uri?: string;
   image: string | undefined;
 };
 
@@ -90,6 +93,7 @@ export type SpotifyRecommendationsResponse = {
     id: string;
     name: string;
     type: string;
+    uri: string;
     external_urls: {
       spotify: string;
     };

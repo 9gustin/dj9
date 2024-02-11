@@ -1,5 +1,7 @@
-import { SearchSection } from "@/components/Home/components/MainContent/components/SearchResult";
+import { SearchSection } from "@/components/Home/components/SearchSection";
+import { type SearchItem } from "@/server/api/routers/spotify/types";
 import { api } from "@/utils/api";
+import { IconPlaylistAdd } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 
 export default function Mix() {
@@ -15,6 +17,12 @@ export default function Mix() {
     },
   );
 
+  const { mutate: $addToQueue } = api.spotify.addToQueue.useMutation({
+    onSuccess: () => {
+      // TODO: ADD TOAST
+      console.log("Added to queue");
+    },
+  });
   if (isFetching) {
     return <div>Loading...</div>;
   }
@@ -23,13 +31,24 @@ export default function Mix() {
     return <div>Error</div>;
   }
 
+  const handleAdd = async (item: SearchItem) => {
+    if (!item.uri) return;
+
+    $addToQueue({
+      trackURI: item.uri,
+    });
+  };
+
   return (
     <SearchSection
       title="For you ;)"
       items={data.tracks}
-      actions={{
-        open: true,
-      }}
+      genericActions={[
+        {
+          icon: <IconPlaylistAdd />,
+          action: handleAdd,
+        },
+      ]}
     />
   );
 }

@@ -58,7 +58,7 @@ export const Header = () => {
           </div>
         )}
       </div>
-      <Button onClick={() => signOut()}>Sign out</Button>
+      <Button onClick={() => signOut()}>Logout</Button>
     </header>
   );
 };
