@@ -156,9 +156,6 @@ export const spotifyRouter = createTRPCRouter({
         );
 
         if (!response.ok) {
-          console.log(
-            `https://api.spotify.com/v1/recommendations?${urlParams.toString()}`,
-          );
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Spotify API error",
