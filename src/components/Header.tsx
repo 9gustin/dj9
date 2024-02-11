@@ -7,6 +7,7 @@ import {
 } from "@tabler/icons-react";
 import classNames from "classnames";
 import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const deviceIcon = {
   Computer: IconDeviceLaptop,
@@ -16,6 +17,7 @@ const deviceIcon = {
 
 export const Header = () => {
   const { data: sessionData } = useSession();
+  const router = useRouter();
 
   const { data, isLoading } = api.spotify.getPlayerState.useQuery();
 
@@ -24,6 +26,11 @@ export const Header = () => {
   }
 
   const DeviceIcon = data?.device.type && deviceIcon[data.device.type];
+
+  const handleLogout = async () => {
+    await router.push("/");
+    await signOut();
+  };
 
   return (
     <header className="flex items-center justify-between gap-4 rounded-lg bg-gray-700 p-4 text-gray-100">
@@ -58,7 +65,7 @@ export const Header = () => {
           </div>
         )}
       </div>
-      <Button onClick={() => signOut()}>Logout</Button>
+      <Button onClick={handleLogout}>Logout</Button>
     </header>
   );
 };
