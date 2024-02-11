@@ -3,9 +3,9 @@ import { type SearchItem } from "@/server/api/routers/spotify/types";
 import { IconPlus, IconX } from "@tabler/icons-react";
 import classNames from "classnames";
 
-export type GenericAction = {
+export type GenericAction<ActionParam> = {
   icon: React.ReactNode;
-  action: (item: SearchItem) => void | Promise<void>;
+  action: (item?: ActionParam) => void | Promise<void>;
 };
 
 type ItemActions = {
@@ -13,7 +13,7 @@ type ItemActions = {
     isSelected?: boolean;
     toggleItem?: () => boolean;
   };
-  generic?: GenericAction[];
+  generic?: GenericAction<SearchItem>[];
 };
 
 export const CardResult = ({
