@@ -10,6 +10,7 @@ export const Login = () => {
       <Button
         size="lg"
         variant="secondary"
+        className="flex items-center gap-2"
         onClick={() => void signIn("spotify", { callbackUrl: "/" })}
       >
         <IconBrandSpotify /> Login with Spotify
