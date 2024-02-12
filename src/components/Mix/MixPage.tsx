@@ -9,9 +9,11 @@ import {
 import { useRouter } from "next/router";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useToast } from "../ui/use-toast";
 
 export const MixPage = () => {
   const queryParams = useRouter().query;
+  const { toast } = useToast();
 
   const { data, isFetching, refetch } = api.spotify.recommendations.useQuery(
     {
@@ -20,14 +22,27 @@ export const MixPage = () => {
     },
     {
       enabled: Boolean(queryParams.tracks) || Boolean(queryParams.artists),
+      retry: false,
+      onError: () =>
+        toast({
+          variant: "destructive",
+          title: "Error fetching recommendations",
+          description: "Please try again later",
+        }),
     },
   );
 
   const { mutate: $addToQueue } = api.spotify.addToQueue.useMutation({
-    onSuccess: () => {
-      // TODO: ADD TOAST
-      console.log("Added to queue");
-    },
+    onError: () =>
+      toast({
+        variant: "destructive",
+        title: "Error adding this song to queue",
+        description: "Please try again later",
+      }),
+    onSuccess: () =>
+      toast({
+        title: "Song added successfully",
+      }),
   });
 
   const handleAdd = async (item?: SearchItem) => {

@@ -8,11 +8,14 @@ import { useRouter } from "next/router";
 import { type SearchItem } from "@/server/api/routers/spotify/types";
 import { useState } from "react";
 import { api } from "@/utils/api";
+import { useToast } from "../ui/use-toast";
 
 const SEED_LIMIT = 5;
 
 export const Home = () => {
   const [query, setSearch] = useDebouncedState("", 300);
+  const { toast } = useToast();
+
   const [selected, setSelected] = useState<SearchItem[]>([]);
 
   const router = useRouter();
@@ -42,6 +45,13 @@ export const Home = () => {
     },
     {
       enabled: Boolean(query.trim()),
+      retry: false,
+      onError: () =>
+        toast({
+          variant: "destructive",
+          title: "Error searching items",
+          description: "Please try again later",
+        }),
     },
   );
 
